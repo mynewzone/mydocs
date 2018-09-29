@@ -1,0 +1,26 @@
+
+thinkphp 路由 url后缀 html怎么设置
+
+开发服务器的solr 服务器没有数据？
+
+solr的原理和搭建
+
+sql中的@rank:=@rank+1 高级排名函数用法
+	++ https://www.jianshu.com/p/bb1b72a1623e
+
+MongoDB服务器的配置与搭建
+
+xdebug如何进行远程调试
+
+在线sql调试
+
+SocketLog
+
+调试相关的有两个目标：
+1.本地调试
+2.线上调试
+
+（代码 + sql）
+
+
+

@@ -1,0 +1,5 @@
+
+安装 javaee前 需要安装最基础的 javase 的sdk
+
+jre 运行环境
+jdk 开发者专用

@@ -1,0 +1,30 @@
+
+-- 等待输入
+
+你有两个命令可供选择：set和choice
+1、set /p 变量名=显示内容
+@echo off
+set/p option=请输入你的选择:
+if "%option%"=="1" echo 您输入了1
+if "%option%"=="2" echo 您输入了2
+::以上两个"echo ********"可以换成你自己的命令
+pause
+2、choice 
+@echo off
+choice /c 12 /m 请输入你的选择：
+if errorlevel 2 echo 你输入了2
+if errorlevel 1 echo 你输入了1
+pause
+
+
+@ 代表这一行不显示
+
+Rem 相当于cc语言的注释 /* */
+:: 也是注释
+
+: 标签定位符，表示其后的字符串为以标签，可以作为goto命令的作用对象。比如在批处理文件里面定义了一个":begin"标签，用"goto begin"命令就可以转到":begin"标签后面来执行批处理命令了。
+
+echo '<script>alert("当前为正式服数据库，不允许更新");</script>';exit;
+
+
+

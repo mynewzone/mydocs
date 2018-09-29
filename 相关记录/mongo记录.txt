@@ -1,0 +1,138 @@
+
+//查询所有
+db.getCollection('webOpLog').find({})
+
+------------------------------------------------------------------
+
+//查询性能
+var beginTime = (new Date('2018/08/27 00:00:00')).getTime()/1000;
+var endTime = (new Date('2018/08/27 23:59:59')).getTime()/1000;
+
+db.getCollection('webOpLog').aggregate([
+    {
+        '$match' : {
+            'ctime' : {'$gte':beginTime, '$lte':endTime},
+            
+        },
+    },
+    {
+        '$group' : {
+            '_id' : '$method',
+            'avgMs' : {'$avg' : '$runtime'},
+            'maxMs' : {'$max' : '$runtime'},
+            'minMs' : {'$min' : '$runtime'},
+            'count' : {'$sum' : 1},
+            'totalMs' : {'$sum' : '$runtime'},
+        },
+    },
+    {
+        '$sort' : {'count' : -1},
+    },
+]
+);
+
+------------------------------------------------------------
+
+//查询大于3秒的请求
+var beginTime = (new Date('2018/08/27 00:00:00')).getTime()/1000;
+var endTime = (new Date('2018/08/27 23:59:59')).getTime()/1000;
+
+db.getCollection('webOpLog').aggregate([
+    {
+        '$match' : {
+            'ctime' : {'$gte':beginTime, '$lte':endTime},
+            'runtime' : {'$gte':3},
+            
+        },
+    },
+    {
+        '$group' : {
+            '_id' : '$method',
+            'avgMs' : {'$avg' : '$runtime'},
+            'maxMs' : {'$max' : '$runtime'},
+            'minMs' : {'$min' : '$runtime'},
+            'count' : {'$sum' : 1},
+            'totalMs' : {'$sum' : '$runtime'},
+        },
+    },
+    {
+        '$sort' : {'count' : -1},
+    },
+]
+);
+
+--------------------------------------------------------
+
+//查询大于3秒的某个请求
+var beginTime = (new Date('2018/08/27 00:00:00')).getTime()/1000;
+var endTime = (new Date('2018/08/27 23:59:59')).getTime()/1000;
+
+db.getCollection('webOpLog').aggregate([
+    {
+        '$match' : {
+            'ctime' : {'$gte':beginTime, '$lte':endTime},
+            'runtime' : {'$gte':3},
+            'method' : 'achievement/drugstore/mystore',
+        },
+    },
+    {
+        '$sort' : {'runtime' : -1},
+    },
+]
+);
+
+
+存储的数据为：
+
+{
+    "_id" : ObjectId("5b83f5e572f29cbcbc8ba0dd"),
+    "uid" : "2926",
+    "userInfo" : {
+        "user_id" : "2926",
+        "parent_id" : "2216",
+        "role_id" : "14",
+        "role_remark" : "xiaoshoujingli",
+        "is_hr" : "0",
+        "nickname" : "陈旭乔",
+        "is_global" : "0",
+        "issuper" : false
+    },
+    "modelName" : "achievement",
+    "controllerName" : "drugstore",
+    "actionName" : "mystore",
+    "method" : "achievement/drugstore/mystore",
+    "postData" : {
+        "p" : "1",
+        "change_field" : "flag_cash_amount",
+        "order_type" : "1",
+        "ajax_type" : "2",
+        "limit_row" : "10",
+        "now_field" : "flag_cash_amount",
+        "keyword" : "",
+        "area_code" : "110115",
+        "user_id" : "",
+        "startDay" : "2015-01-01",
+        "endDay" : "\n                                                             2018-08-27",
+        "sub_type" : "",
+        "province" : "11",
+        "provincename" : "北京市",
+        "city" : "1101",
+        "cityname" : "北京市",
+        "area" : "110115",
+        "areaname" : "大兴区",
+        "street" : "",
+        "streetname" : "--",
+        "flag_type" : "",
+        "invoiceType" : "",
+        "sortLoginTime" : "0"
+    },
+    "postDataJson" : "{\"p\":\"1\",\"change_field\":\"flag_cash_amount\",\"order_type\":\"1\",\"ajax_type\":\"2\",\"limit_row\":\"10\",\"now_field\":\"flag_cash_amount\",\"keyword\":\"\",\"area_code\":\"110115\",\"user_id\":\"\",\"startDay\":\"2015-01-01\",\"endDay\":\"\n                                                             2018-08-27\",\"sub_type\":\"\",\"province\":\"11\",\"provincename\":\"北京市\",\"city\":\"1101\",\"cityname\":\"北京市\",\"area\":\"110115\",\"areaname\":\"大兴区\",\"street\":\"\",\"streetname\":\"--\",\"flag_type\":\"\",\"invoiceType\":\"\",\"sortLoginTime\":\"0\"}",
+    "getData" : [],
+    "runtime" : 61.768,
+    "ctime" : NumberLong(1535374821),
+    "userAgent" : "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36"
+}
+
+
+INSERT INTO db_ysb_salesmen.ts_drugstore_message (`ctime`,`user_id`,`msg_content`,`drugstore_branch_id`) VALUES (:0,:1,:2,:3)
+:(

@@ -1,0 +1,75 @@
+
+目录结构：
+	++ 最外部目录：report
+	++ 网站根目录+入口文件+一些静态资源：report/code/public （图片、js、css等，一般主站的html不在这里，都在view上的模板文件上）
+	++ 项目根目录：report/code/apps
+	++ tp核心目录：../ThinkPHP/lib-3.2.2/ (根report目录同级)
+	++ 数据目录：report/code/data (一些缓存数据、日志数据、临时数据等，一般由程序生成)
+
+
+入口文件：report/code/public/report.php
+需要配置apache的index，让其首页能指向report.php
+
+
+配置文件：
+	开发版：report/code/apps/common/conf/debug.php
+	测试版：report/code/apps/common/conf/test.php
+	正式版：report/code/apps/common/conf/prod.php
+
+
+$APP_SETTING = Array ( 
+	[EXT_CONFIG] => debug 
+	[APP_DEBUG] => 1 
+	[APP_NAME] => report 
+	[APP_ROOT] => D:\mywork\report\code\ 
+	[APP_LIB] => D:/mywork/ThinkPHP/lib-3.2.2/ 
+)
+APP_PATH :  项目根目录 report/code/apps/
+RUNTIME_PATH：程序运行路径：report/code/data/_runtime/
+
+
+url不带参数时，$_GET为空。
+
+项目根目录下的第一级目录除了common，均为模块目录（包括：Admin、Api、Chart）
+
+URL_ROUTER_ON 为 false ，没有开启路由
+
+'TMPL_TEMPLATE_SUFFIX' => '.tpl.php', // 模版后缀名
+
+
+------------------------------------
+
+开启了模板布局：
+
+'LAYOUT_ON' => 1, //  启用模版布局
+'LAYOUT_NAME' => 'layout', // 布局文件名称
+'TMPL_LAYOUT_ITEM' => '{__CONTENT__}', // 布局模板的内容替换标识
+
+先渲染 layout文件，然后再渲染对应的模板文件，填充到 {__CONTENT__} 内
+
+'TMPL_ACTION_ERROR' => 'Public:dispatch_jump', //默认错误跳转对应的模板文件
+'TMPL_ACTION_SUCCESS' => 'Public:dispatch_jump', //默认成功跳转对应的模板文件
+	++ Public 为模板目录，dispatch_jump为模板
+
+模板页面上：
+<include file="Block:header" />  （blcok为目录，headerw为头文件）
+<layout name="menu" /> 模板中引用别的布局模板
+
+layout(false); // 临时关闭当前模板的布局功能
+
+---------------------------------------------
+
+制作右侧菜单结构的函数：
+report/code/apps/Admin/Admin/CommonAdmin.class.php@tpl_code_right_sidebar
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,20 @@
+
+
+'TMPL_TEMPLATE_SUFFIX'  =>  '.html',     // 默认模板文件后缀
+
+
+项目涉及的数据库：
+	++ db_ysb_salesmen（用户库）
+	++ db_ysb_course（课程库）
+	++ db_ysb_drugsales（药买卖库）
+	++ db_ysb_log （记录库）
+	++ db_ysb_message （消息库）
+	++ db_ysb_order （订单库）
+	++ db_ysb_dictionary
+	++ db_ysb_form
+	++ db_ysb_user
+	++ db_ysb_admin
+	++ db_ysb_logistic
+	++ db_arch_form
+	++ ysbAdminLog
+

@@ -1,0 +1,223 @@
+
+常用公共函数：
+
+	++ I -- input 输入
+	++ D -- 模型实例化
+	++ C -- 获取或设置配置信息
+
+
+可在对应模块下的conf目录下的config.php文件内重设置 控制器、模型、视图的目录名称
+	++（原来分别为 controller、model、view），在 ThinkPHP/conf/convention.php 目录下默认设置
+	++ 'DEFAULT_M_LAYER'       =>  'Model', // 默认的模型层名称
+	++ 'DEFAULT_C_LAYER'       =>  'Controller', // 默认的控制器层名称
+	++ 'DEFAULT_V_LAYER'       =>  'View', // 默认的视图层名称
+
+
+一般 thinkphp框架 和 应用目录下的某个模块内 的 common目录 和 conf目录 存放的文件分别为：
+	++ common目录：function.php 或 functions.php（thinkphp框架内加s）
+	++ conf 目录下：config.php 、 debug.php（开启了'APP_STATUS' => 'debug'） 、convention.php、tags.php
+
+另外，应用目录下也会存在一个common目录，用来存放一些公共库文件（Lib）
+	++ Lib 内一般存放 公共model 和 和一些公共库
+	++ 当然，同时作为一个模块，它也可能会包含conf 和 common 目录
+
+'URL_MODEL'  =>  1,       
+// URL访问模式,可选参数0、1、2、3,代表以下四种模式：
+// 0 (普通模式); 1 (PATHINFO 模式); 2 (REWRITE  模式); 3 (兼容模式)  默认为PATHINFO 模式
+
+'ACTION_SUFFIX'   => 'Act',        // 控制器方法后缀
+
+
+路由机制配置：
+
+ //当前模块Home
+    // 路由设置
+    'URL_ROUTER_ON'     => true,
+    'URL_ROUTE_RULES'   => array(
+        'id/:id\d' => 'Home/Index/index',
+    ),
+
+
+模板注释写法：{/* 注释内容 */ } 或 {// 注释内容 } 
+
+---------------------------------------------------
+
+模板解析变量的方式：{$var} ，如：{$__BREADCRUMB__}  
+	++ 数组用. {$Think.config.db_charset}
+
+使用函数：
+	
+	++ 单变量参数：{$data.name|md5} ==》<?php echo (md5($data['name'])); ?>
+
+	++ 多变量参数：{$create_time|date="y-m-d",###} ==》 <?php echo (date("y-m-d",$create_time)); ?>
+		++ 其中 ### 就是 变量 $create_time
+		++ {$data.name|substr=0,3} 等价于 {$data.name|substr=###,0,3}，参数在第一位，不用写###
+			==》<?php echo (substr($data['name'],0,3)); ?>
+
+	++ 调用多个函数：{:substr(strtoupper(md5($name)),0,3)} 或 {$name|md5|strtoupper|substr=0,3}  
+		==》 <?php echo (substr(strtoupper(md5($name)),0,3)); ?>
+
+
+变量取默认值：
+
+	++ {$Think.get.name|default="名称为空"}
+	++ 函数和默认值同时用：{$Think.get.name|getName|default="名称为空"}
+
+
+使用运算符时不支持点语法：
+
+{$user.score+10} //错误的
+{$user['score']+10} //正确的
+{$user['score']*$user['level']} //正确的
+{$user['score']|myFun*10} //错误的
+{$user['score']+myFun($user['level'])} //正确的
+
+三元运算符：（也不支持点语法）
+{$status?'正常':'错误'}
+{$info['status']?$info['msg']:$info['error']}
+
+包含文件的方式：
+<include file="Public/header" /> // 包含头部模版header
+<include file="Public:header" /> （兼容3.1）
+
+包含文件时传入参数：
+<include file="Public/header" title="ThinkPHP框架" keywords="开源WEB开发框架" />
+	
+	++ header 文件内可使用 title 和 keywords ：
+		-- <title>[title]</title>
+		-- <meta name="keywords" content="[keywords]" />
+
+
+-------------------------------------------------------------
+
+模板上导入js和css文件的一些方法：
+<script type='text/javascript' src='/Public/Js/Util/Array.js'>
+<link rel="stylesheet" type="text/css" href="/App/Tpl/default/Public/css/style.css" />
+
+import:
+<import type='js' file="Js.Util.Array" />
+
+load:
+<load href="/Public/Js/Common.js" />
+
+提供的标签：
+<js href="/Public/Js/Common.js" />
+<css href="/Public/Css/common.css" />
+
+------------------------------------------------------------
+
+模板继承：
+
+A页面：
+<block name="title"><title>网站标题</title></block>
+
+B页面：（title值要唯一）
+<extend name="A" />
+<block name="title"><title>{$web_title}</title></block>
+	
+	++ 这样，A页面中对应的block处的内容会被B页面所替代
+
+--------------------------------------------------------------
+
+模板常用内置标签：
+	
+if标签：
+
+<if condition="$id lt 5 ">
+	value1
+<else />
+ 	value2
+</if>
+	
+	++ 其中 condition属性中可以支持eq等判断表达式，同上面的比较标签，但是不支持带有”>”、”<”等符号的用法，因为会混淆模板解析
+
+
+foreach标签：
+
+<foreach name="list" item="vo" key="k" >
+   {$k}|{$vo}
+</foreach>
+
+
+-----------------------------------------------------------
+
+性能调优：
+
+G('begin');
+// ...其他代码段
+G('end');
+// ...也许这里还有其他代码
+// 进行统计区间
+echo G('begin','end').'s';   // 时间
+
+echo G('begin','end','m').'kb';  //内存
+
+
+显示trace信息：
+'SHOW_PAGE_TRACE' =>true, // 显示页面Trace信息
+
+
+加载特殊配置文件：
+
+define('APP_DEBUG',true);
+'APP_STATUS' => 'test', //应用调试模式状态
+
+	++ 这样会加载模块目录下的conf目录的test.php 配置文件
+	++ APP_DEBUG 为true时才会有效
+
+
+模型调试：（输出上一次执行的sql语句）
+$User = M("User"); // 实例化User对象
+$User->find(1);
+echo $User->getLastSql();
+
+	++ echo M()->getLastSql(); 空心model获取全局最后的sql
+
+------------------------------------------------------
+
+获取过滤后的输入：
+	
+	++ I('post.id',0,'intval'); // 用intval过滤$_POST['id']
+		++ function I($name,$default='',$filter=null,$datas=null) 
+		++ 常见的安全过滤函数包括stripslashes、htmlentities、htmlspecialchars和strip_tags等；
+		++ 默认采用：htmlspecialchars 方式过滤
+		++ 可设置 'DEFAULT_FILTER'        =>  'strip_tags,stripslashes', 来改变或添加过滤方式
+
+	++ 要尽量避免直接使用$_GET $_POST $_REQUEST 等数据，这些可能会导致安全的隐患。 就算你要获取整个$_GET数据，我们也建议你使用 I('get.') 的方式
+ 
+	++ 也可以在模型中使用filter方法进行数据过滤：$this->data($data)->filter('strip_tags')->add();
+
+----------------------------------------------------
+
+缓存相关配置：
+
+'DATA_CACHE_TIME' => null, // 数据缓存有效期 0表示永久缓存
+'DATA_CACHE_TIMEOUT' => false,
+'DATA_CACHE_TYPE' => 'Redis',
+
+----------------------------------------------------
+
+'URL_HTML_SUFFIX'       =>  'html',  // URL伪静态后缀设置
+
+'ACTION_SUFFIX'  => 'Act', // 控制器方法后缀
+
+'DEFAULT_C_LAYER' => 'Admin',  // 默认的控制器层
+
+
+----------------------------------------------------
+
+开启模板缓存：
+
+TMPL_CACHE_ON = true
+
+//禁止
+'TMPL_CACHE_ON' => false,//禁止模板编译缓存 
+'HTML_CACHE_ON' => false,//禁止静态缓存 
+
+----------------------------------------------------
+
+查看最后的sql语句：
+
+$model->_sql();  
+$this->_sql();    // 在当前model页内
+

@@ -1,0 +1,8 @@
+
+drugstore_branch_id  为药店id
+
+db_ysb_order.ts_wholesale_order   药店的所有订单（关联了所属的销售）
+db_ysb_dictionary.ts_drugstore_branch 药店信息表
+db_ysb_dictionary.ts_areas   药店的相关的所有地区信息
+db_ysb_salesmen.ts_user_otherinfo  销售类型的用户的其他信息
+db_ysb_salesmen.ts_user_drugstorebranch 药店和销售的关联表

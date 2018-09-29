@@ -1,0 +1,31 @@
+
+
+// 定义扩展配置文件
+defined('EXT_CONFIG') or define('EXT_CONFIG', $APP_SETTING['EXT_CONFIG']);
+	++ 生产服务器为debug
+
+----------------------------------------------------
+
+有两种方式来获得扩展的配置文件：
+
+	++ 1. 'APP_STATUS' => 'test', //应用调试模式状态 （项目appw使用的就是这种方式）
+	++ 2. defined('EXT_CONFIG') or define('EXT_CONFIG', $APP_SETTING['EXT_CONFIG']);
+		-- 然后用EXT_CONFIG.DEBUG 即可获取对应配置文件 EXT_CONFIG.php 中的 DEBUG 配置项
+		-- 几个项目中的数据库读取都用到了这种方式
+
+
+//调用配置文件中的数据库配置1
+protected $connection = 'DB_CONFIG2';
+
+------------------------------------------------------
+
+调用本地数据库：
+
+$data = \Think\Db::getInstance(C('EXT_CONFIG.DB_LOCAL'))
+	->query('select * from test_table where test_id = 1');
+
+或者
+
+$data = M('Table', 'test_',C('EXT_CONFIG.DB_LOCAL'))->where(1)->find();
+	++ 第一个参数为table名，第二个参数为table前缀，第三个参数为connect信息
+	++ M能实例化一个不存在model文件的模型

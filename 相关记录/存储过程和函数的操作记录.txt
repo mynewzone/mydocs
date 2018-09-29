@@ -1,0 +1,84 @@
+
+查询数据库中的存储过程和函数：
+select `name` from mysql.proc where db = 'db_ysb_form' and `type` = 'PROCEDURE' ;
+select `name` from mysql.proc where db = 'db_ysb_form' and `type` = 'FUNCTION' ;
+
+查询所有的存储过程和函数：
+show procedure status;     //存储过程
+show function status;    //函数
+
+存储过程的创建方式：
+
+DROP PROCEDURE IF EXISTS `change_drug_id`;
+DELIMITER ;;
+CREATE DEFINER=`ysb`@`%` PROCEDURE `change_drug_id`(IN `old_provider_id` int,IN `ws_id` int,IN `new_drug_id` int)
+BEGIN
+
+。。。。。
+
+END
+;;
+DELIMITER ;
+
+执行：call change_drug_id(old_provider_id , ws_id , new_drug_id);
+
+创建函数：
+DROP FUNCTION IF EXISTS `get_drugid`;
+DELIMITER ;;
+CREATE DEFINER=`ysb`@`localhost` FUNCTION `get_drugid`(`v_approval` varchar(50),`v_pack` varchar(64),`v_barcode` varchar(20)) RETURNS int(11)
+    READS SQL DATA
+BEGIN
+
+.............
+
+END
+;;
+DELIMITER ;
+
+执行：直接在存储过程中调s用。
+
+navicat的数据传输能够导出存储过程
+
+-----------------------------------------------------
+
+找某个字符串是否在某个存储过程中：
+SELECT ROUTINE_NAME 
+FROM INFORMATION_SCHEMA.ROUTINES 
+WHERE ROUTINE_DEFINITION LIKE '%get_drugid%';
+
+SELECT ROUTINE_NAME 
+FROM INFORMATION_SCHEMA.ROUTINES 
+WHERE ROUTINE_DEFINITION LIKE '%store_cash ';
+
+SELECT ROUTINE_NAME 
+FROM INFORMATION_SCHEMA.ROUTINES 
+WHERE ROUTINE_DEFINITION LIKE '%ts_wholesale_order_ext%';
+
+-----------------------------------------------
+
+存储过程与函数的区别：
+
+存储过程是用户定义的一系列sql语句的集合，涉及特定表或其它对象的任务，用户可以调用存储过程，而函数通常是数据库已定义的方法，它接收参数并返回某种类型的值并且不涉及特定用户表。 
+存储过程和函数存在以下几个区别： 
+1）一般来说，存储过程实现的功能要复杂一点，而函数的实现的功能针对性比较强。存储过程，功能强大，可以执行包括修改表等一系列数据库操作；用户定义函数不能用于执行一组修改全局数据库状态的操作。 
+2）对于存储过程来说可以返回参数，如记录集，而函数只能返回值或者表对象。函数只能返回一个变量；而存储过程可以返回多个。存储过程的参数可以有IN,OUT,INOUT三种类型，而函数只能有IN类~~存储过程声明时不需要返回类型，而函数声明时需要描述返回类型，且函数体中必须包含一个有效的RETURN语句。 
+3）存储过程，可以使用非确定函数，不允许在用户定义函数主体中内置非确定函数。 
+4）(mysql除外)存储过程一般是作为一个独立的部分来执行（ EXECUTE 语句执行），而函数可以作为查询语句的一个部分来调用（SELECT调用），由于函数可以返回一个表对象，因此它可以在查询语句中位于FROM关键字的后面。 SQL语句中不可用存储过程，而可以使用函数。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

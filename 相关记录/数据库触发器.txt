@@ -1,0 +1,39 @@
+
+查看触发器：
+SELECT   *   FROM   information_schema.TRIGGERS
+
+创建触发器的语法：
+CREATE TRIGGER trigger_name trigger_time trigger_event
+    ON tbl_name FOR EACH ROW trigger_stmt
+
+触发程序是与表有关的命名数据库对象，当表上出现特定事件时，将激活该对象。
+
+------------------------------------------------------------------------
+
+delimiter ||  
+drop trigger if exists deletecomment||  
+create trigger deletecomment before delete on user for each row  
+begin  
+delete from comment where comment.u_id=old.id;  
+end||  
+delimiter ;  
+
+-------------------------------------------------------------------------
+
+SELECT   TRIGGER_NAME,TRIGGER_SCHEMA,EVENT_OBJECT_SCHEMA,ACTION_REFERENCE_OLD_TABLE, ACTION_REFERENCE_NEW_TABLE,ACTION_STATEMENT   FROM   information_schema.TRIGGERS;
++--------------+----------------+---------------------+----------------------------+----------------------------+-------------------------------------------------------------------------------------------+
+| TRIGGER_NAME | TRIGGER_SCHEMA | EVENT_OBJECT_SCHEMA | ACTION_REFERENCE_OLD_TABLE | ACTION_REFERENCE_NEW_TABLE | ACTION_STATEMENT                                                                          |
++--------------+----------------+---------------------+----------------------------+----------------------------+-------------------------------------------------------------------------------------------+
+| triggerone   | test           | test                | NULL                       | NULL                       | begin
+
+if new.test_name!=old.test_name then
+set new.amount = old.amount + 3;
+end if;
+end |
++--------------+----------------+---------------------+----------------------------+----------------------------+-------------------------------------------------------------------------------------------+
+1 row in set
+
+---------------------------------------------------------
+
+
+

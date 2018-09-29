@@ -1,0 +1,17 @@
+
+Windows 批处理文件的编码格式
+
+
+"控制台窗口 属性 -> 选项 -> 默认代码页" 中可以设置当前代码页.
+
+1>. 如果当前代码页是 437(OEM - 美国), 则批处理路径和命令中的中文字符均不能被识别;
+
+2>. 如果当前代码页是 936(ANSI/OEM - 简体中文 GBK), 那么当 .bat 文件以 ANSI 编码时, 路径以及命令参数中的中文字符可以正确识别; 以 UTF-8 without BOM 编码时, .bat 文件虽然可被识别, 但其中的中文字符和中文路径是不能识别的.
+
+所以, 如果处理的命令或路径中包含中文字符, 请使用 ANSI 编码, 否则执行会出错.
+
+另外:
+
+1>. ANSI 和 UTF-8 without BOM 编码的 .bat 文件能被识别是因为文件头未插入任何特殊字节;
+
+2>. UTF-8, Unicode(UCS-2 Little Endian) 以及 Unicode big endian(UCS-2 Big Endian) 编码的 .bat 文件执行时, 提示"×××不是内部或外部命令，也不是可运行的程序或批处理文件。" , 这是因为这三种编码格式的文件默认在文件头插入了特殊字节(即 BOM: Byte Order Mark). UTF-8 在文件头插入了 3 个字节 EF BB BF, Unicode 在文件头插入了 2 个字节 FF FE, Unicode big endian 在文件头插入了 2 个字节 FE FF. 它们不是 Windows 所能识别的命令, 所以相应编码格式的 .bat 文件执行出错.

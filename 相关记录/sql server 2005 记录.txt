@@ -1,0 +1,17 @@
+
+数据文件：
+
+mdf = master database file
+ldf = log database file
+
+
+进入cmd命令：
+
+sqlcmd -S127.0.0.1 -Usa -Padmin@123456
+-S 服务器
+-U 用户
+-P 密码
+
+
+在字符串前面加上 N 代表存入数据库时以 Unicode 格式存储。
+N'string'  表示string是个Unicode字符串

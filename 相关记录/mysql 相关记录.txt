@@ -1,0 +1,16 @@
+
+强制走索引：force index (oid) 
+	++ 强制走主键： force index (PRIMARY)
+
+SELECT t1.value,sum(t2.hits) as hits FROM destoon_category_value t1 force index (oid) 
+left join destoon_sell_5 t2 on t1.itemid=t2.itemid WHERE oid in (25798,25792,25786) 
+and t1.moduleid = 5 GROUP BY t1.value order by hits desc limit 0,5
+
+不缓存：SELECT SQL_NO_CACHE
+
+当explain sql语句后的type为range时，并且 GROUP BY + ORDER BY同时必要时
+在field中不统计字段时，可以采用 id is not null 替代 group by ，这样能优化filesort
+
+
+
+

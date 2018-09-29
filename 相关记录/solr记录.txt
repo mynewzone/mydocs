@@ -1,0 +1,160 @@
+
+------------------------------------------------------------------------------
+
+分组统计：Stats Component
+
+stats 布尔值，设为true，表示开启Stats Component 
+stats.field 指定需要做统计的字段 
+stats.facet 对指定的facet生成一个子结果集 
+stats.calcdistinct 布尔值，将会返回”countDistinct”和”distinctValues”，其代价很高。默认fasle 
+
+分组统计2：facet
+
+facet.field 需要做facet查询的字段，必须指定，否则其他参数无效 
+facet.sort 排序规则，可以是count（默认值，由大到小）或index（字典顺序） 
+facet.limit 控制返回的数量，默认100 
+facet.missing 控制是否考虑没有facet字段，默认false 
+
+
+ps：solr分组统计的方案有：
+
+1.facet，单纯分组并统计分组数量
+	++ facet.limit=-1  表示所有
+	++ facet.sort= xx desc
+
+2.stats+facet，分组后可以对某一个字段进行分组求和
+
+3.JSON Faceting API（ > solr 5.3），可以实现相对复杂的分组统计
+	++ 用法如：&json.facet={"total_price":"sum(orderPay)","price":"avg(orderPay)"}
+	++ {"platform":{"type":"terms","field":"platform","facet":{"user_amount":"'unique(user_id)'","total_price":"'sum(price)'","mean_price":"'avg(price)'"}}}
+
+ {"platform":{"type":"terms","field":"orderId","facet":{"user_amount":"'unique(orderPay)'","total_price":"'sum(orderPay)'","mean_price":"'avg(orderPay)'"}}}
+
+4.group by
+
+------------------------------------------------------------------------------
+
+分组统计一：
+
+http://localhost:48983/solr/provider_order/select?indent=on&q=*:*&rows=0&indent=true&omitHeader=true&wt=json
+&fq=orderPay:[0+TO+*]
+&fq=payTime:[1441446888+TO+1536141288]
+&fq=-orderPay:0
+&json.facet={%22sales%22:{%22type%22:%22terms%22,%22field%22:%22salesId%22,%22limit%22:-1,%22sort%22:%22total_price%20desc%22,%22facet%22:{%22total_price%22:%22sum(orderPay)%22,%22mean_price%22:%22avg(orderPay)%22}}}
+	++ %22 是双引号
+	++ 输出的数据量可以相对少一点
+
+分组统计二：
+
+http://localhost:48983/solr/provider_order/select?indent=on&q=*:*&rows=0&indent=true&omitHeader=true&wt=json
+&fq=orderPay:[0+TO+*]
+&fq=payTime:[1441446888+TO+1536141288]
+&fq=orderPay:0
+&facet=on&facet.field=orderPay&stats=true&stats.calcdistinct=false
+&stats.facet=salesId
+&stats.field=orderPay
+
+-----------------------------------------------------------------
+
+http://localhost:48983/solr/provider_order/select?indent=on&q=*:*&rows=0&indent=true&omitHeader=true&wt=json&fq=payTime:{1441446888+TO+1536141288}&fq=-processStatus:4&fq=-processStatus:8&json.facet={
+"sales":{
+"type":"terms",
+"field":"salesId",
+"limit":-1,
+"facet":{
+"stotal" : "sum(orderPay)", 
+"store":{
+"type":"terms",
+"field" : "drugstoreBranchId",
+"query":"stotal:[100+TO+*]",
+"facet" : {
+"stotal" : "sum(orderPay)", 
+"mean" : "avg(orderPay)"
+}
+}
+}
+}
+}
+
+
+
+
+http://localhost:48983/solr/provider_order/select?indent=on&q=*:*&rows=0&indent=true&omitHeader=true&wt=json&fq=payTime:{1441446888+TO+1536141288}&fq=-processStatus:4&fq=-processStatus:8&json.facet={
+	"store": {
+		"type": "terms",
+		"field": "drugstoreBranchId",
+		"facet": {
+			"idnum" : "unique(drugstoreBranchId)",
+			"mtotal": "sum(orderPay)"
+		}
+	}
+}
+
+http://localhost:48983/solr/provider_order/select?indent=on&q=*:*&rows=0&indent=true&omitHeader=true&wt=json&fq=payTime:{1441446888+TO+1536141288}&fq=-processStatus:4&fq=-processStatus:8&json.facet={
+	"store": {
+		"type": "terms",
+		"field": "drugstoreBranchId",
+		"limit":-1,
+		"query":"mtotal:[30000000+TO+*]",
+		"facet": {
+			"storesNum" : "unique(drugstoreBranchId)",
+			"salesNum":"unique(salesId)",
+			"mtotal": "sum(orderPay)"
+		}
+	}
+}
+
+
+http://localhost:48983/solr/provider_order/select?indent=on&q=*:*&rows=0&indent=true&omitHeader=true&wt=json&fq=payTime:{1441446888+TO+1536141288}&fq=-processStatus:4&fq=-processStatus:8&json.facet={
+	"store": {
+		"type": "terms",
+		"field": "drugstoreBranchId",
+		"limit": -1,
+		"facet": {
+			"sales": {
+				"type":"terms",
+				"field":"salesId",
+				"q": "sum(orderPay):[30000000+TO+*]",
+				"facet": {
+					"storesNum": "unique(drugstoreBranchId)",
+					"salesNum": "unique(salesId)",
+					"mtotal": "sum(orderPay)"
+				}
+			}
+		}
+	}
+}
+
+
+http://localhost:48983/solr/provider_order/select?indent=on&q=*:*&rows=0&indent=true&omitHeader=true&wt=json&fq=payTime:{1441446888+TO+1536141288}&fq=-processStatus:4&fq=-processStatus:8&json.facet={
+	"sales": {
+		"type": "terms",
+		"field": "salesId",
+		"limit": -1,
+		"facet": {
+			"store_query":{
+				"type":"query",
+				"field": "drugstoreBranchId",
+				"mtotal": "sum(orderPay)",
+				"q":"mtotal:[3000000+TO+*]",
+				"facet":{
+					"storesNum": "unique(drugstoreBranchId)",
+					"salesNum": "unique(salesId)",
+					"mtotal": "sum(orderPay)"
+				}
+			}
+		}
+	}
+}
+
+
+
+store": {
+						"type": "terms",
+						"field": "drugstoreBranchId",
+						"facet": {
+							"storesNum": "unique(drugstoreBranchId)",
+							"salesNum": "unique(salesId)",
+							"mtotal": "sum(orderPay)"
+						}
+					}

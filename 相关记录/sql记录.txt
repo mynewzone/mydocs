@@ -1,0 +1,6 @@
+
+给字段加上唯一性约束，可用于订单号等
+在定义字段后面加上 unique
+
+// 在field中生成条件查询
+case when then else end

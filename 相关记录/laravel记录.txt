@@ -1,0 +1,62 @@
+
+定义HTTP异常：
+	++ abort($code,$description); abort(403, 'Unauthorized action.');
+	++ 定义对应的错误页面：resources/views/errors/403.blade.php
+
+日志记录：
+	++ \Log::info($message, array $context = array())
+
+门面类的架构：
+
+	++ 静态调用和简化
+	++ 定制对应门面 -- 门面接口 -- 核心代码 -- 提供者接口 -- 定制提供者
+	++ config/app.php 
+		-- aliases 配置门面对应类简称：'Cookie' => Illuminate\Support\Facades\Cookie::class
+			++ 根据字符串 cookie 获取到容器内映射的实际类
+		-- providers 配置对应提供者：Illuminate\Cookie\CookieServiceProvider::class,
+			++ 将对应的实际类加载到容器（ServiceProvider->app）
+			++ $this->app->singleton('datatables', function () {
+            			return new Datatables($this->app->make(Request::class));
+        		   });
+				-- 把实例化后的类放到容器内，以便门面获取
+			++ 服务提供者是包和 Laravel 之间的连接点，服务提供者负责绑定对象到 Laravel 的服务容器并告知 Laravel 从哪里加载包资源如视图、配置和本地化文件。
+			++ 生成服务提供者：php artisan make:provider RiakServiceProvider 
+	
+	++ 另外，可以直接在定制门面内实例化对应的类实现热插拔
+   		public static function fake()
+    		{
+        		static::swap(new MailFake);
+    		}
+		-- 实例化的类放置于Facade->resolvedInstance 容器内
+
+
+关闭缓存：
+
+php artisan cache:clear 
+
+
+跨域请求：
+
+$.ajax({
+            url: imgUrl+'api.php/Admin/Public/apiLoginAds',
+            type: 'GET',
+            dataType:'jsonp',
+	   jsonp:"jsoncallback",    //这样会改变url参数callback的name
+	   jsonpCallback:"callbackFunction", //这样会改变url参数callback的value 
+            success: function (data) {
+                var result = JSON.stringify(data); //json对象转成字符串
+
+                console.log(data);
+                console.log(result);
+
+                console.log(3);
+            },
+            error:function(data){
+                console.info('somehing wrong',data);
+            }
+        });
+
+
+后端返回：echo $_GET['jsoncallback'] . "(".$info['values'].")";
+
+			
