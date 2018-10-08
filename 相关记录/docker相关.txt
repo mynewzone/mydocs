@@ -1,0 +1,6 @@
+
+working place pc 安装docker时，提示的信息：
+
+To see how to connect your Docker Client to the Docker Engine running on this virtual machine, run: C:\Program Files\Docker Toolbox\docker-machine.exe env default
+
+docker is configured to use the default machine with IP 192.168.99.100
