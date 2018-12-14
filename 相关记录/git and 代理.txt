@@ -1,0 +1,17 @@
+git init
+git add README.md
+git commit -m "first commit" 
+git remote add origin git@github.com:mynewzone/mydocs.git   //本地与线上关联
+git pull origin master --allow-unrelated-histories   //先将线上的文件拉下来 ，如果线上没有分支master，则不需要加这一句
+git push -u origin master   //提交
+
+//代理
+ssh -CNf -i ~/.ssh/id_rsa -D 127.0.0.1:2080 root@67.218.143.4  -p28988
+
+//clone，解决非22端口问题
+git clone git@git.coding.net:myusercat/tmpshop.git
+改成
+git clone ssh://git@git.coding.net:22/myusercat/tmpshop.git
+
+//git鉴别大小写
+.git 文件夹内的config文件的ignorecase 置为false

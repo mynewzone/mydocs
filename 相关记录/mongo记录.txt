@@ -1,4 +1,44 @@
 
+搭建mongo服务器：
+
+到官网https://www.mongodb.com下载安装包，设置好数据库数据和日志的路径，记得不要设置到c盘，可能会有权限问题。
+
+如果启动不了服务，则尝试一下操作：（ps：log是文件而不是目录）
+
+//直接启动（非服务）
+mongod --dbpath="D:\MongoDB\data" --logpath="D:\MongoDB\log" --logappend --directoryperdb
+
+//安装服务
+mongod --dbpath="D:\MongoDB\data" --logpath="D:\MongoDB\log" --logappend --directoryperdb --serviceName "MongoDB" --serviceDisplayName "MongoDB" --install
+	++ 加个参数  --auth ，能强制进行鉴权
+
+//卸装服务
+mongod --remove --serviceName "MongoDB"
+
+//启动和关闭服务
+net start mongodb
+net stop mongodb
+
+//默认mongodb是没有设置访问权限的，为了安全我们需要为其设置访问权限
+//创建管理员 （必须在admin库下创建，角色为：userAdminAnyDatabase）
+use admin
+db.createUser({user:"root",pwd:"root",roles:["userAdminAnyDatabase"]})
+db.auth("root","root")      //登录
+
+	++ 增加管理员后，卸装服务，重新以 --auth 方式安装服务
+	++  db.system.users.findOne({user:"admin"})   //查看账号信息
+
+//创建普通用户 （普通的数据库用户角色有两种，read 和 readWrite）
+	++ 1.以用户管理员的身份登录 admin 数据库
+	++ 2.用 use 命令切换到目标数据库
+	++ 3.同样用 db.createUser() 命令来创建用户
+use testdb
+db.createUser({user:"test",pwd:"test",roles:["readWrite"]})
+db.auth("test","test")      //登录
+
+
+--------------------------------------------------------------------
+
 //查询所有
 db.getCollection('webOpLog').find({})
 

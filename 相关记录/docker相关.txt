@@ -23,71 +23,160 @@ cd Kitematic
 Kitematic.exe
 
 
+// mysql 的问题
+ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'root';
 
-总计:62127个人排行>>
-姓名
-采购药店数
-指标
-完成度
-周玉明	19651 (1/182)	23470	83.73%
-赵珊珊	10036 (2/182)	11260	89.13%
-张鹏（北大区）	8027 (3/182)	7040	114.02%
-徐军	5882 (4/182)	7000	84.03%
-陈宇峰	4761 (5/182)	6320	75.33%
-黄力	4690 (6/182)	6040	77.65%
-杜念	4313 (7/182)	5000	86.26%
-卢旭	3616 (8/182)	500	723.2%
-陈应钦	3197 (9/182)	4290	74.52%
-门晓禹	2879 (10/182)	1100	261.73%
+docker stop --time=20 container_name
 
 
-总计:62096个人排行>>
-姓名
-采购药店数
-指标
-完成度
-周玉明	19638 (1/182)	23470	83.67%
-赵珊珊	10032 (2/182)	11260	89.09%
-张鹏（北大区）	8022 (3/182)	7040	113.95%
-徐军	5881 (4/182)	7000	84.01%
-陈宇峰	4754 (5/182)	6320	75.22%
-黄力	4690 (6/182)	6040	77.65%
-杜念	4313 (7/182)	5000	86.26%
-卢旭	3605 (8/182)	500	721%
-陈应钦	3197 (9/182)	4290	74.52%
-门晓禹	2879 (10/182)	1100	261.73%
+1.停止所有的container，这样才能够删除其中的images：
+
+docker stop $(docker ps -a -q)
+
+如果想要删除所有container的话再加一个指令：
+
+docker rm $(docker ps -a -q)
+
+删除某一类docker（如 redis）
+ docker rm $(docker ps -a  | grep redis | awk '{print $1}')
+
+2.查看当前有些什么images
+
+docker images
+
+3.删除images，通过image的id来指定删除谁
+
+docker rmi <image id>
+
+想要删除untagged images，也就是那些id为<None>的image的话可以用
+
+docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
+
+要删除全部image的话
+
+docker rmi $(docker images -q)
+
+查看错误日志：
+docker logs myredis
+
+--------------------------------------------------------
+//进入docker machine
+ docker-machine ssh default
+//进入容器
+docker exec -it mysql /bin/bash
+//停止容器
+docker stop id
+//删除容器
+docker rm id
+
+ssh -C  -p4222 root@localhost
+
+-----------------------------------------------------------------
+
+ubuntu安装docker：
+
+	-- 获取安装包：wget -qO- https://get.docker.com/ | sh
+		++ 错误：“apt-get 404 Not Found Package Repository Errors”
+		++ 原因：之前 /etc/apt/sources.list 路径里面的软件源更新网站有的已经过时了，需要更新新的网站。
+		++ 解决方案：
+			-- sudo cp /etc/apt/sources.list /etc/apt/sources.list_backup 	
+			-- sudo vi /etc/apt/sources.list 
+			-- 追加内容：
+deb http://cn.archive.ubuntu.com/ubuntu/ xenial main restricted universe multiverse
+deb http://cn.archive.ubuntu.com/ubuntu/ xenial-security main restricted universe multiverse
+deb http://cn.archive.ubuntu.com/ubuntu/ xenial-updates main restricted universe multiverse
+deb http://cn.archive.ubuntu.com/ubuntu/ xenial-backports main restricted universe multiverse
+##测试版源
+deb http://cn.archive.ubuntu.com/ubuntu/ xenial-proposed main restricted universe multiverse
+# 源码
+deb-src http://cn.archive.ubuntu.com/ubuntu/ xenial main restricted universe multiverse
+deb-src http://cn.archive.ubuntu.com/ubuntu/ xenial-security main restricted universe multiverse
+deb-src http://cn.archive.ubuntu.com/ubuntu/ xenial-updates main restricted universe multiverse
+deb-src http://cn.archive.ubuntu.com/ubuntu/ xenial-backports main restricted universe multiverse
+##测试版源
+deb-src http://cn.archive.ubuntu.com/ubuntu/ xenial-proposed main restricted universe multiverse
+		
+		++ 获取gpg：wget https://yum.dockerproject.org/gpg 
+		++ 给apt添加秘钥：sudo apt-key add gpg
+
+	-- 将普通用户添加到docker组：sudo usermod -aG docker zjh	 （注意执行后须注销重新登录）
+	-- 运行docker：sudo service docker start
+	-- 运行container：docker run hello-world （运行，没有则下载）
+	-- 查看docker情况：docker info
+
+--------------------------------------------------------------
+
+查找：docker search redis
+
+---------------------------------------------------------------
+查找某一天增加的文件：
+
+#!/bin/sh 
+        # The right of usage, distribution and modification is here by granted by the author. 
+        # The author deny any responsibilities and liabilities related to the code. 
+        # 
+        OK=0 
+        A=`find $1 -print` 
+        if expr $3 == 1 >/dev/null ; then M=Jan ; OK=1 ; fi 
+        if expr $3 == 2 >/dev/null ; then M=Feb ; OK=1 ; fi 
+        if expr $3 == 3 >/dev/null ; then M=Mar ; OK=1 ; fi 
+        if expr $3 == 4 >/dev/null ; then M=Apr ; OK=1 ; fi 
+        if expr $3 == 5 >/dev/null ; then M=May ; OK=1 ; fi 
+        if expr $3 == 6 >/dev/null ; then M=Jun ; OK=1 ; fi 
+        if expr $3 == 7 >/dev/null ; then M=Jul ; OK=1 ; fi 
+        if expr $3 == 8 >/dev/null ; then M=Aug ; OK=1 ; fi 
+        if expr $3 == 9 >/dev/null ; then M=Sep ; OK=1 ; fi 
+        if expr $3 == 10 >/dev/null ; then M=Oct ; OK=1 ; fi 
+        if expr $3 == 11 >/dev/null ; then M=Nov ; OK=1 ; fi 
+        if expr $3 == 12 >/dev/null ; then M=Dec ; OK=1 ; fi 
+        if expr $3 == 1 >/dev/null ; then M=Jan ; OK=1 ; fi 
+        if expr $OK == 1 > /dev/null ; then 
+        ls -l --full-time $A 2>/dev/null | grep "$M $4" | grep $2 ; 
+        else 
+            echo Usage: $0 path Year Month Day; 
+            echo Example: $0 ~ 1998 6 30; 
+        fi
 
 
-总计:13个人排行>>
-姓名
-采购药店数
-指标
-完成度
-李玲	6 (1/171)	暂无	暂无
-周玉明	4 (2/171)	暂无	暂无
-陆玲玲	2 (3/171)	0	0%
-彭柏源	2 (4/171)	暂无	暂无
-黄力	1 (5/171)	暂无	暂无
-陈应钦	1 (6/171)	暂无	暂无
-曾镇波	1 (7/171)	暂无	暂无
-孙睿	1 (8/171)	暂无	暂无
-陈万机	1 (9/171)	暂无	暂无
-朱建伟	1 (10/171)	暂无	暂无
+-------------------------------------------------------------
 
+ls -l --full-time  find $1 -print 2>/dev/null  | grep "$2-$3-$4"
 
-总计:41643个人排行>>
-姓名
-采购药店数
-指标
-完成度
-周玉明	16719 (1/182)	10500	159.23%
-赵珊珊	6197 (2/182)	8000	77.46%
-黄力	4481 (3/182)	1400	320.07%
-徐军	3826 (4/182)	5000	76.52%
-杜念
+--------------------------------------------------------------
+
+sudo docker run --detach \
+	--publish 3443:443 --publish 380:80 --publish 322:22 \
+	--name gitlab \
+	--restart always \
+	--volume /home/zjh/mydata/gitlab/config:/etc/gitlab \
+	--volume /home/zjh/mydata/gitlab/logs:/var/log/gitlab \
+	--volume /home/zjh/mydata/gitlab/data:/var/opt/gitlab \
+	gitlab/gitlab-ce:latest
 
 
 
-上传根目录不存在！请尝试手动创建:./WebImage/uploads/excelTemplate/appwebTemp/Temp
+sudo docker run --detach \
+	--publish 3443:443 --publish 380:80 --publish 322:22 \
+	--name gitlab \
+	--restart always \
+	--volume /d/docker_work/gitlab/config:/etc/gitlab \
+	--volume /d/docker_work/gitlab/logs:/var/log/gitlab \
+	--volume /d/docker_work/gitlab/data:/var/opt/gitlab \
+	gitlab/gitlab-ce:latest
+---------------------------------------------------------------
 
-Array ( [1313446] => 3 [1700332] => 5 )
+# 查看 myredis 的 ip 挂载 端口映射等信息
+docker inspect myredis
+# 查看 myredis 的端口映射
+docker port myredis
+
+---------------------------------------------------------------
+
+sudo docker run --detach  \ --publish 33443:443 --publish 3380:80 --publish 3322:22 \ --name gitlab \ --restart always \ --volume ~/gitlab/config:/etc/gitlab \ --volume ~/gitlab/logs:/var/log/gitlab \ --volume ~/gitlab/data:/var/opt/gitlab \ gitlab/gitlab-ce:latest
+
+
+docker run --detach --hostname g.com  --publish 33443:443 --publish 3380:80 --publish 3322:22 --name gitlab --restart always  --volume ~/gitlab/config:/etc/gitlab --volume ~/gitlab/logs:/var/log/gitlab  --volume ~/gitlab/data:/var/opt/gitlab  gitlab/gitlab-ce:latest
+
+docker run --detach --hostname g.com  --publish 33443:443 --publish 3380:80 --publish 3322:22 --name gitlab --volume ~/gitlab/config:/etc/gitlab --volume ~/gitlab/logs:/var/log/gitlab  --volume ~/gitlab/data:/var/opt/gitlab  gitlab/gitlab-ce:latest
+
+docker run --detach --hostname g.com  --publish 33443:443 --publish 3380:80 --publish 3322:22 --name gitlab gitlab/gitlab-ce:latest
