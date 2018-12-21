@@ -13,5 +13,7 @@ git clone git@git.coding.net:myusercat/tmpshop.git
 改成
 git clone ssh://git@git.coding.net:22/myusercat/tmpshop.git
 
+git clone ssh://git@git.dev.tencent.com:22/myusercat/apiManage.git
+
 //git鉴别大小写
 .git 文件夹内的config文件的ignorecase 置为false
