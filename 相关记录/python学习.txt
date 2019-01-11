@@ -1,2 +1,556 @@
 
+------------------------------------------------------
+
+c/c++ 是编译型语言，一般会带头部文件，用来方便开发人员查看各种函数的定义
+
+解释型语言：
+
+JavaScript 和 php 有预编译过程，会将变量定义和函数定义先初始化，php初始化为null，JavaScript初始化为undefined
+
+python 没有预编译过程，程序的执行从上到下一行行地解释，所以变量和函数定义必须写在执行之前，否则会找不到变量和函数
+	-- python会生成.pyc文件持久化中间码，python运行时会先检查是否存在.pyc文件，有则直接执行
+
+java 会先进行编译形成中间码，然后再通过虚拟机执行，执行时无需再进行词法检查、语法检查等操作，所以速度上更优
+
+------------------------------------------------------
+
 1.python是强类型语言，所以要注意类型转换的问题
+
+2.函数和变量区分大小写
+
+元组和列表互相转换：
+	列表转元组(冻结列表): tuple()
+	元组转列表(解冻列表):list()
+
+注释方式：
+	++ 单行注释：#
+	++ 躲闪注释：''' test '''  或 """ test """
+
+批量赋值（相当于tuple）：self.a, self.b = self.b, self.a + self.b 
+
+python的函数定义必须要带括号，类的定义可以不带object，甚至不带括号
+
+python一切皆对象，函数、基础变量本身也是对象
+
+删除变量：del x  类似于php种的unset()
+
+python中没有专门定义常量的方式，通常使用大写变量名表示,仅仅是一种提示效果,NAME = ’tony'  ( 本质还是变量)
+
+
+------------------------------ 字符串相关 ---------------------------
+
+字符串连接：
+	++ website = 'python' + 'tab' + '.com'      # 效率低，要申请新内存
+	++ website = '%s%s%s' % ('python', 'tab', '.com')
+	++ website = ''.join( ['python', 'tab', '.com'] )
+
+------------------------------  函数相关 -----------------------------
+
+1.python可以在函数内部定义函数
+
+2.定义默认参数要牢记一点：默认参数必须指向不变对象！
+	++ 可以指向 整型、浮点型、字符串、元组、None、布尔型
+	++ 不能指向列表、set集合、哈希字典
+
+3.我们在编写程序时，如果可以设计一个不变对象，那就尽量设计成不变对象。
+
+4.定义可变参数函数：def calc(*numbers)
+	++ 将truple和list变成可变参数，然后传入函数： nums = [1, 2, 3]     calc(*nums)
+
+5.关键字参数（字典型可变参数）：def person(name, age, **kw) ，内部kw会组成一个字典
+	++ 传值方式如：person('zjh','26',kk='ccc',cc='kkk')
+	++ 同理将字典变成可变参数，然后传入函数： extra = {'city': 'Beijing', 'job': 'Engineer'}  person('Jack', 24, **extra)
+
+6.命名关键字参数：def person(name, age, *args, city, job)
+	++ 参数名固定成city,job 
+	++ 其中args为可变元组参数，在它后面的参数将都是命名关键字参数
+	++ 传参方式：person('zjh',23,'item1','item2,city='guangdong',job='php')
+	++ 另一个种定义方式：def person(name, age, *, city, job)  ，用*隔开，*不是参数，传参时可忽略
+
+7.Python中默认的最大递归深度是998
+	++ 解决递归调用栈溢出的方法是通过尾递归优化
+	++ 即 return function()； 不要有计算，如：return n*function()，这样实现不了尾递归
+
+8.调用任意参数：wrapper()函数的参数定义是(*args, **kw)，因此，wrapper()函数可以接受任意参数的调用
+
+---------------------------------------------------------------------
+
+切片：[from:to:step] ，不包含to，step为步长
+	++ 元组也可以实现切片
+	++ 字符串也可以切片
+
+----------------------------------------------------------------------
+list = [key1,key2]
+dict = {'key1':'value1','key2':'value2'}
+
+迭代：index，key ，value
+for...in 不管是字典还是列表，迭代的都是key
+字典如果要迭代value，for value in d.values()，如果要同时迭代key和value，可以用for k, v in d.items()
+	++ 字符串也可以迭代，for ch in 'ABC'
+	++ list同时迭代index和key： for index, key in enumerate(['A', 'B', 'C'])
+	++ 迭代矩阵：for x, y,z in [[1, 1,5], (2, 4,6), (3, 9,7),{'c':4,"d":5,"e":0}]
+
+判断对象是否可以迭代：
+>>> from collections import Iterable
+>>> isinstance('abc', Iterable) # str是否可迭代
+True
+>>> isinstance([1,2,3], Iterable) # list是否可迭代
+True
+>>> isinstance(123, Iterable) # 整数是否可迭代
+False
+
+可迭代的数据类型：
+一类是集合数据类型，如list、tuple、dict、set、str等；
+一类是generator，包括生成器和带yield的generator function。
+
+
+---------------------------- 列表生成式 --------------------------
+
+生成顺序列表： list(range(1, 11)) 或 [x for x in range(1, 11)]
+	    -- 右边为开区间
+
+带条件筛选：[x * x for x in range(1, 11) if x % 2 == 0]
+
+多层循环： [m + n for m in 'ABC' for n in 'XYZ']
+	-- ['AX', 'AY', 'AZ', 'BX', 'BY', 'BZ', 'CX', 'CY', 'CZ']
+
+列出文件和目录：>>> import os # 导入os模块，模块的概念后面讲到
+>>> [d for d in os.listdir('.')] # os.listdir可以列出文件和目录
+
+同时循环多变量：[k + '=' + v for k, v in d.items()]
+	-- ['y=B', 'x=A', 'z=C']
+
+
+------------------------- 生成器 -------------------------
+
+如果列表元素可以按照某种算法推算出来，那我们是否可以在循环的过程中不断推算出后续的元素呢？这样就不必创建完整的list，从而节省大量的空间。在Python中，这种一边循环一边计算的机制，称为生成器：generator
+
+两种创建方式：
+	1.把一个列表生成式的[]改成()，g=(x * x for x in range(10))
+	2.在函数内把print(b)改为yield b
+
+def fib(max):
+    n, a, b = 0, 0, 1
+    while n < max:
+        yield b
+        a, b = b, a + b
+        n = n + 1
+    return 'done'
+
+调用方式：
+	1.next(g)
+	2.通过for in 循环
+
+通过异常捕获，获取函数的返回：
+
+while True:
+     try:
+         x = next(g)
+         print('g:', x)
+     except StopIteration as e:
+         print('Generator return value:', e.value)
+         break
+
+------------------------  迭代器 -------------------
+
+凡是可作用于for循环的对象都是Iterable类型；
+
+凡是可作用于next()函数的对象都是Iterator类型，它们表示一个惰性计算的序列；
+
+集合数据类型如list、dict、str等是Iterable但不是Iterator，不过可以通过iter()函数获得一个Iterator对象。
+
+Python的for循环本质上就是通过不断调用next()函数实现的
+
+
+--------------------------高阶函数-----------------------
+
+函数式编程的一个特点就是，允许把函数本身作为参数传入另一个函数，还允许返回一个函数！
+
+一个函数就可以接收另一个函数作为参数，这种函数就称之为高阶函数。Higher-order function
+
+++ 高阶函数之：map()
+	-- 由于结果r是一个Iterator，Iterator是惰性序列，因此通过list()函数让它把整个序列都计算出来并返回一个list
+def f(x):
+    return x * x
+r = map(f, [1, 2, 3, 4, 5, 6, 7, 8, 9])
+list(r)
+# 结果:[1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+++ 高阶函数之：reduce()
+	-- reduce把结果继续和序列的下一个元素做累积计算
+from functools import reduce
+def add(x, y):
+     return x + y
+ reduce(add, [1, 3, 5, 7, 9])
+# 结果:25
+
+++ 高阶函数之：filter()
+	-- 过滤函数
+def is_odd(n):
+    return n % 2 == 1
+list(filter(is_odd, [1, 2, 4, 5, 6, 9, 10, 15]))
+# 结果: [1, 5, 9, 15]
+
+++ 高阶函数之：sorted()
+	-- 排序函数
+	-- key 自定义的排序函数
+	-- reverse 反向排序，高到低
+sorted(['bob', 'about', 'Zoo', 'Credit'], key=str.lower, reverse=True)
+['Zoo', 'Credit', 'bob', 'about']
+
+
+-------------------------- 返回函数与闭包------------------
+
+ 返回闭包时牢记一点：返回函数不要引用任何循环变量，或者后续会发生变化的变量。
+
+def lazy_sum(*args):
+    def sum():
+        ax = 0
+        for n in args:
+            ax = ax + n
+        return ax
+    return sum
+
+------------------------- 匿名函数 ----------------------
+
+关键字lambda表示匿名函数，冒号前面的x表示函数参数。
+
+匿名函数有个限制，就是只能有一个表达式，不用写return，返回值就是该表达式的结果。
+
+lambda x: x * x
+
+lambda: x * x + y * y
+
+
+-------------------------- 装饰器 -----------------------
+
+“装饰器”（Decorator）为了运行时前后扩展一个函数
+
+“装饰器”（Decorator）：本质上，decorator就是一个返回函数的高阶函数。
+获取函数名的内置属性：func.__name__
+
+#扩展函数func
+import functools
+def log(text):
+    def decorator(func):
+        @functools.wraps(func)     #用于保持 func.__name__ 不变
+        def wrapper(*args, **kw):
+            print('%s %s():' % (text, func.__name__))
+            return func(*args, **kw)
+        return wrapper
+    return decorator
+
+#利用装饰器扩展函数
+@log('execute')
+def now():
+    print('2015-3-25')
+
+#相当于
+now = log('execute')(now)
+
+#调用now
+now()
+
+#输出
+execute now():
+2015-3-25
+
+
+
+------------------------------- 偏函数 -------------------------
+
+当函数的参数个数太多，偏函数（functools.partial）用于固定原函数部分参数
+
+int2 = functools.partial(int, base=2)
+int2('1000000')
+结果：64
+
+也可以重新设置，不采用已经固定的值：int2('1000000', base=10)
+
+'''
+偏函数实际上可以接收函数对象、*args和**kw这3个参数
+当固定的参数为*args 则会提前放到新函数的最左边
+当固定的参数为**kw 则会提前放到新函数的右边
+
+max2 = functools.partial(max, 10)
+max2(5, 6, 7)
+相当于：max(10, 5, 6, 7)
+
+int2 = functools.partial(int, base=2)
+int2('1000000')
+相当于：int('1000000', base=2)
+
+'''
+
+
+-------------------------- 模块相关 ------------------------
+
+模块标准头部注释:
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+创建自己的模块时，要注意：
+1. 模块名要遵循Python变量命名规范，不要使用中文、特殊字符；
+2. 模块名不要和系统模块名冲突，最好先查看系统是否已存在该模块，检查方法是在Python交互环境执行import abc，若成功则说明系统存在此模块。
+
+在Python中，一个.py文件就称之为一个模块（Module）。
+Python又引入了按目录来组织模块的方法，称为包（Package）。
+
+每一个包目录下面都会有一个__init__.py的文件，这个文件是必须存在的，否则，Python就把这个目录当成普通目录，而不是一个包。__init__.py可以是空文件，也可以有Python代码，因为__init__.py本身就是一个模块，而它的模块名就是mycompany。
+
+
+导入模块方式,如： import sys
+任何模块代码的第一个字符串都被视为模块的文档注释：'a test module'
+	++ 获取变量 __doc__
+作者变量：__author__ = 'Michael Liao'
+
+if __name__=='__main__' ，判断是否命令行运行当前模块
+
+模块私有变量，不应该外部调用的变量（非不能）：_xxx 或 __xxx
+
+------------------------ 导入模块 -----------------------
+
+可以被 import 语句导入的模块共有以下四类: 
+	++ 使用Python写的程序( .py文件)
+	++ C或C++扩展(已编译为共享库或DLL文件)
+	++ 包(包含多个模块)
+	++ 内建模块(使用C编写并已链接到Python解释器内)
+
+导入xxx：
+	++ 导入函数：
+		-- from modname import funcname   #可直接调用函数
+		-- from .modname import funcname  #相对模块导入函数，只针对包
+	++ 导入模块：
+		-- import modname
+		-- from packet import modname
+		-- import packet.modname
+		-- from modname import *      #直接将模块下所有公共函数导入到命名空间，直接调用
+		-- mymodule = __import__ (’module_name’)   #通过内建函数导入
+		-- from . import modname   # 显式相对引入，只针对包
+		-- from ..packet import modname   # 显式相对引入上层模块，只针对包
+	++ 导入包：import packet
+		-- 导入包内所有模块1： import packet ,  然后在包内的__init__.py文件内import modname
+		-- 导入包内所有模块2：from packet import * ，然后在包内的__init__.py文件内定义变量__all__ = ["modname1","modname2"]
+		
+
+import socket, os, regex  
+	++ 导入多个模块，以逗号分隔
+	++ 但是却违背了Python风格指南。Python风格指南建议将每个导入语句单独成行。
+
+import socket as net, thread as threads
+	++ 模块设置别名
+
+from module/packet import *  
+	-- 导入公共对象(public object) 或 __all__列表中存在的对象
+	-- __all__ = [ 'bar', 'spam' ] 
+		++__all__ 内容可以为：模块名、函数名、变量名
+		++ 一般在__init.py__ 内的all内容为模块名
+
+
+查看已经导入的模块：sys.modules
+
+包内相对导入：
+	++ Python 相对导入与绝对导入，这两个概念是相对于包内导入而言的（带__init.py__的目录）
+	++ 相对导入可以避免硬编码带来的维护问题
+	++ 包内文件不能直接运行，要运行包中包含绝对导入和相对导入的模块，可以运行 python -m A.B.C 告诉解释器模包的层次结构。
+	++ 绝对导入，不能导入上一层包下的模块，只能导入当前或下层包的模块
+	++ 相对导入，一个模块必须有包结构
+	++ . 为当前包，.packet 上层模块 ，..packet 上上层模块，建议最多两层
+	
+相对包而言：
+	++ import moduleY # 隐式相对引入
+	++ from . import moduleY # 显式相对引入
+	++ from sub_pkg1 import moduleY # 绝对引入
+	++ from .module_y import spam as ham #相对模块导入函数
+
+
+from future import absolute_import 的作用：
+	++ 禁用 implicit relative import（隐式相对导入）, 但并不会禁掉 explicit relative import（显示相对导入）。
+
+from __future__ import unicode_literals 的作用：
+	++ 将模块中显式出现的所有字符串转为unicode类型
+
+import多层包内子模块时，__init__.py 会从上层到下层依次执行
+
+
+------------------------ 包管理工具pip-------------------
+
+Mac或Linux上有可能并存Python 3.x和Python 2.x，因此对应的pip命令是pip3
+
+anaconda
+
+添加模块搜索路径：
+	++ 运行时添加
+import sys
+sys.path.append('/Users/michael/my_py_scripts')
+
+	++ 设置环境变量：PYTHONPATH
+
+Python import 的搜索路径
+	++ 在当前目录下搜索该模块
+	++ 在环境变量 PYTHONPATH 中指定的路径列表中依次搜索
+	++ 在 Python 安装路径的 lib 库中搜索
+	
+------------------------ 关于python 中的__future__模块 --------------------
+
+从python2.1开始以后, 当一个新的语言特性首次出现在发行版中时候, 如果该新特性与以前旧版本python不兼容, 则该特性将会被默认禁用. 如果想启用这个新特性, 则必须使用 "from __future__import *" 语句进行导入.
+
+------------------------------ 类相关 -----------------------------------------
+
+class Student(object)
+	++ 默认继承object	
+	++ 实例化 object = Student()
+
+类的方法第一个参数必须为self，调用时，不用传入
+
+在Python中，实例的变量名如果以__开头，就变成了一个私有变量（private）
+	++ 不能直接访问__name是因为Python解释器对外把__name变量改成了_Student__name，所以，仍然可以通过_Student__name来访问__name变量，bart._Student__name
+	++ 强烈建议不要这么做
+在Python中，变量名类似__xxx__的，也就是以双下划线开头，并且以双下划线结尾的，是特殊变量，特殊变量是可以直接访问的，不是private变量
+	++ 模块私有变量或函数一个以上前置下划线，类私有变量或函数两个前置下划线
+
+不直接公开调用属性的原因：因为在方法中，可以对参数做检查，避免传入无效的参数
+
+python 是动态语言，类型可在运行时确定，无需多态
+
+python类的构造函数 def __init__(self):
+
+获取对象的数据：
+	++ 获取对象类型
+		1.type()  -- class string , NoneType , class __main__.Animal
+		2.isinstance()  -- isinstance(h, Dog) , 返回 True or False
+	++ 获取对象属性和方法
+		-- dir('classA')  得到属性和方法的列表[] ， 可以列出类的属性或实例的属性 dir(A) 或 a = A() \ dir(a)
+		-- getattr(obj,'y')  -- 获取属性y的值
+		-- hasattr(obj,'y')  -- 是否有属性y	
+		-- setattr(obj,'y',19)  -- 设置属性
+	++ python中__dict__存储了该对象的一些属性
+		-- 类和对象使用的是不同的__dict__
+
+class Student(object):
+    name = 'Student'
+	++ 这种属性是类属性，归Student类所有
+	++ 尽量避免对实例属性和类属性使用相同的名字，相同名称的实例属性将屏蔽掉类属性
+
+---------------------------------- 类继承相关 ------------------------------------
+
+调用父类方法：class B(A)  -- B 继承 A
+	++ 内部调用：
+		-- A.method(self,args)
+		-- super(B,self).method(args)
+		-- super().method(args)       # 适合多重继承时，统一调用
+	++外部调用：
+		-- A.method(B(),args)
+		-- super(B,B()).method(args)
+	++ super函数其最大的特点是如果子类继承了多个父类，它只需要使用一次super函数就可以。然而如果没有这个需求，直接使用A.method(self,args)更直观一些。
+
+
+无需通过继承，直接类扩展
+	++ php
+		-- 静态扩展：trait
+		-- 动态扩展：魔术方法，魔术变量
+		-- 动态绑定函数：
+			++ class A { 
+    				private $x = 1; 
+			      } 
+			     // PHP 7 之前版本定义闭包函数代码 
+			    $getXCB = function() { 
+    				return $this->x; 
+			    }; 
+			     // 闭包函数绑定到类 A 上 
+			    $getX = $getXCB->bindTo(new A, 'A');  
+			    echo $getX(); 
+			    print(PHP_EOL); 
+
+			    // PHP 7+ 代码 
+			    $getX = function() { 
+    				return $this->x; 
+			     }; 
+			     echo $getX->call(new A); 
+
+	++ python
+		-- 动态扩展：
+			++ s = Student()
+			++ s.name = 'Michael' # 动态给实例绑定一个属性
+			++ Student.name = 'nili'  #给类绑定属性
+			++ from types import MethodType
+			++ s.set_age = MethodType(set_age, s) # 给实例绑定一个方法
+			++ Student.set_score = set_score #给类绑定方法
+			++ __slots__ 限制实例属性
+			++ __slots__ = ('name', 'age') # 类中定义该变量，用tuple定义允许绑定的属性和方法名称
+			++ __slots__ 仅对当前类有效，子类无效
+
+多重继承：class Dog(Mammal, Runnable):
+	
+
+
+------------------------------- python类特性 ---------------------------
+
+@property装饰器：
+	++ @property 把一个getter方法变成可读属性
+	++ @value.setter 把一个setter方法变成可写属性
+	++ 只设置@property , 不设置 @value.setter , 实现只读属性
+
+class Student(object):
+
+    @property
+    def score(self):
+        return self._score
+
+    @score.setter
+    def score(self, value):
+        if not isinstance(value, int):
+            raise ValueError('score must be an integer!')
+        if value < 0 or value > 100:
+            raise ValueError('score must between 0 ~ 100!')
+        self._score = value
+
+直接调用：
+s.score = 60 	# OK，实际转化为s.set_score(60)
+s.score 		# OK，实际转化为s.get_score()
+
+
+基于python 2.7.10版本，类定义时不带object，不会继承object的属性和方法，实际上在python 3 中已经默认就帮你加载了object了（即便你没有写上object）。
+	++ 即python3种 class A :   == class A():  == class A(object)
+
+------------------------------- 问题记录 ----------------------
+
+1.查 Python中的descriptor描述器
+
+2.raise ValueError('score must be an integer!')， 输出异常
+
+
+--------------------------------------------------------------
+
+PyPy和Pyston解释器在研究采用 JIT 技术
+
+动态语言实现 JIT 技术的一个拦路虎时，在编译阶段比较难判断变量的类型
+
+解释器
+	++ 词法分析-》语义分析-》生成中间码-》编译机器码-》运行
+
+编译器
+	++ 编译成机器码-》运行
+
+通用JIT技术：LLVM
+PHP类JIT技术：HHVM
+java的JIT技术：JVM
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
