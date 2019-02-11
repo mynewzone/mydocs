@@ -1,4 +1,14 @@
 
+开始偏移：start = 1
+
+行数：rows = 10
+
+范围查询，包含边界 : [18 TO 21]
+
+范围查询，不包含边界 : {18 TO 21}
+
+模糊查询，允许拼写错误：administrator~
+
 ------------------------------------------------------------------------------
 
 分组统计：Stats Component
@@ -20,7 +30,7 @@ ps：solr分组统计的方案有：
 
 1.facet，单纯分组并统计分组数量
 	++ facet.limit=-1  表示所有
-	++ facet.sort= xx desc
+	++ facet.sort= xx desc   排序
 
 2.stats+facet，分组后可以对某一个字段进行分组求和
 
@@ -31,6 +41,9 @@ ps：solr分组统计的方案有：
  {"platform":{"type":"terms","field":"orderId","facet":{"user_amount":"'unique(orderPay)'","total_price":"'sum(orderPay)'","mean_price":"'avg(orderPay)'"}}}
 
 4.group by
+
+5.json.facet的限制条数和排序：
+	json.facet={"sales":{"type":"terms","field":"salesId","offset":0,"limit":10,"sort":"count desc"}}
 
 ------------------------------------------------------------------------------
 
