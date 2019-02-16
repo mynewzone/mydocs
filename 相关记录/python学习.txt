@@ -24,7 +24,7 @@ java »áÏÈ½øĞĞ±àÒëĞÎ³ÉÖĞ¼äÂë£¬È»ºóÔÙÍ¨¹ıĞéÄâ»úÖ´ĞĞ£¬Ö´ĞĞÊ±ÎŞĞèÔÙ½øĞĞ´Ê·¨¼ì²é¡¢Óï·
 
 ×¢ÊÍ·½Ê½£º
 	++ µ¥ĞĞ×¢ÊÍ£º#
-	++ ¶ãÉÁ×¢ÊÍ£º''' test '''  »ò """ test """
+	++ ¶àĞĞ×¢ÊÍ£º''' test '''  »ò """ test """
 
 ÅúÁ¿¸³Öµ£¨Ïàµ±ÓÚtuple£©£ºself.a, self.b = self.b, self.a + self.b 
 
@@ -537,8 +537,150 @@ PHPÀàJIT¼¼Êõ£ºHHVM
 javaµÄJIT¼¼Êõ£ºJVM
 
 
+---------------------- with µÄÓÃ·¨ -------------------
+
+ÓĞÁËÉÏÏÂÎÄ¹ÜÀíÆ÷£¨Context Manager£©£¬with Óï¾ä²ÅÄÜ¹¤×÷¡£
+
+1.ĞèÒªÊ¹ÓÃÁË __enter__() ºÍ __exit__() º¯ÊıµÄ¶ÔÏó
+
+class Closing(object):
+    # help doc here
+    def __init__(self, thing):
+        self.thing = thing
+    def __enter__(self):
+        return self.thing
+    def __exit__(self, *exc_info):
+        self.thing.close()
+
+with Closing(ClosingDemo()) as obj :
+    print 'Using resources'
+
+2.Ê¹ÓÃÁË @contextmanager + yield µÄº¯Êı 
+
+from contextlib import contextmanager
+
+@contextmanager
+def create_query(name):
+    print('Begin')
+    q = Query(name)
+    yield q
+    print('End')
+
+with create_query('Bob') as q:
+    q.query()
 
 
+	++ nested ¿ÉÒÔ½«¶à¸öÉÏÏÂÎÄ¹ÜÀíÆ÷×éÖ¯ÔÚÒ»Æğ£¬±ÜÃâÊ¹ÓÃÇ¶Ì× with Óï¾ä
+with nested(A(), B(), C()) as (X, Y, Z):
+     # with-body code here
+
+Ö§³ÖwithÓï¾äµÄº¯Êı open
+
+--------------------------------------------------------
+
+yield ¿ÉÒÔÍ¨¹ı next() ºÍ func.send(s)  µü´ú
+
+--------------------------------------------------------
+
+ÇĞÃæ±à³ÌAOP£¨aspect oriented programming£©£¬¾ÍÊÇ×¨×¢´¦ÀíÖ÷Á÷³Ì£¬½«Ö÷Á÷³ÌÍâµÄÏ¸Ö¦Ä©½Ú¶ÀÁ¢³öÀ´£¬È»ºóÍ¨¹ı¶¯Ì¬´úÀíµÈ·½Ê½ÇĞÈëµ½Ö÷Á÷³Ì£¬ÎŞĞèĞŞ¸ÄÖ÷Á÷³Ì
+
+------------------------------------------------------
+
+×°ÊÎÆ÷ÀàËÆÓÚAOPÇĞÃæ±à³Ì
+
+×°ÊÎÆ÷ÎªÊ²Ã´»¹ĞèÒªÔÚÍâÃæ°ü¹üÒ»²ãº¯Êı£¬ÒòÎª²»°üÀ¨µÄ»°£¬ÄÚ²¿º¯Êı»áÔÚ¸³ÖµÊ±¾ÍÖ´ĞĞÁË¡£
+Íâ²ãº¯ÊıµÄ×÷ÓÃ¾ÍÊÇÎªÁË´«µİÒª×°ÊÎµÄº¯Êı£¬²¢·µ»ØÖØĞÂ°ü×°ºóµÄº¯Êı¡£
+
+def use_logging(func):
+
+    def wrapper():
+        logging.warn("%s is running" % func.__name__)
+        return func()   # °Ñ foo µ±×ö²ÎÊı´«µİ½øÀ´Ê±£¬Ö´ĞĞfunc()¾ÍÏàµ±ÓÚÖ´ĞĞfoo()
+
+    return wrapper
+
+def foo():
+    print('i am foo')
+
+foo = use_logging(foo)  # ÒòÎª×°ÊÎÆ÷ use_logging(foo) ·µ»ØµÄÊ±º¯Êı¶ÔÏó wrapper£¬ÕâÌõÓï¾äÏàµ±ÓÚ  foo = wrapper
+foo()                   # Ö´ĞĞfoo()¾ÍÏàµ±ÓÚÖ´ĞĞ wrapper(£©
+
+×°ÊÎÆ÷ @Óï·¨ÌÇ µÄ×÷ÓÃ¾ÍÏàµ±ÓÚ¸³Öµ
+
+Èç£º
+@use_logging
+def foo()
+Ïàµ±ÓÚ
+foo = use_logging(foo)
+
+//=====´ø²ÎÊıµÄ×°ÊÎÆ÷======£¬ÍâÃæÔÙ°ü¹üÒ»²ãº¯Êı
+def use_logging(level):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            if level == "warn":
+                logging.warn("%s is running" % func.__name__)
+            elif level == "info":
+                logging.info("%s is running" % func.__name__)
+            return func(*args)
+        return wrapper
+
+    return decorator
+
+@use_logging(level="warn")
+def foo(name='foo'):
+    print("i am %s" % name)
+
+foo()
+
+@use_logging(level="warn")µÈ¼ÛÓÚ@decorator £¬½«²ÎÊıwarn´«½øÈ¥
+
+Ïàµ±ÓÚ
+level="warn"
+foo = decorator(foo)
+
+//====== Àà×°ÊÎÆ÷ =======
+
+Ïàµ±ÓÚµ÷ÓÃÀàµÄ__init__ ºÍ __call__
+
+class Foo(object):
+    def __init__(self, func):
+        self._func = func
+
+    def __call__(self):
+        print ('class decorator runing')
+        self._func()
+        print ('class decorator ending')
+
+@Foo
+def bar():
+    print ('bar')
+
+bar() 
+Ïàµ±ÓÚ:
+bar = Foo(bar).__call__();
+
+//=====±£³ÖÔ­ÓĞµÄdoc ºÍ name =============
+
+from functools import wraps
+def logged(func):
+    @wraps(func)
+    def with_logging(*args, **kwargs):
+        print func.__name__      # Êä³ö 'f'
+        print func.__doc__       # Êä³ö 'does some math'
+        return func(*args, **kwargs)
+    return with_logging
+
+@wraps(func)
+
+// ====== ¶à¸ö×°ÊÎÆ÷ ==============
+
+@a
+@b
+@c
+def f ():
+    pass
+
+µ÷ÓÃË³Ğò´ÓÀïµ½Íâ£ºf = a(b(c(f)))
 
 
 
